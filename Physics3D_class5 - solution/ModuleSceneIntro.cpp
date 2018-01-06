@@ -230,8 +230,15 @@ void ModuleSceneIntro::CreateMap()
 	CreateRoadSensors();
 
 
+
+
+	Cube ramp1 = CreateRamps({ 20, 3, 20 }, { 20, 10, 20 }, -12, { 1, 0, 0 }, Blue);//just in case we need ramps
+
+
+
+
 	Cube road1 = CreateRoads({ 20, 5, 142.5f }, { 0, 5, 83.75f }, Grey);
-	
+	/*Cube road1 = CreateRoads({ 20, 5, 270 }, { 0, 5, 20 }, Grey);*/
 	Cube road2 = CreateRoads({ 20, 5, 122.5f }, { 0, 5, -53.75f }, Grey);//road detras del player al principio de la partida
 
 	Cube road3 = CreateRoads({ 100, 5, 20 }, { -40, 5, 165 }, Grey);
