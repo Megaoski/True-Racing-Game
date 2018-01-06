@@ -235,7 +235,7 @@ void ModuleSceneIntro::CreateMap()
 
 
 
-	Cube ramp1 = CreateRamps({ 20, 3, 20 }, { 20, 10, 20 }, -12, { 1, 0, 0 }, Blue);//just in case we need ramps
+	
 
 
 

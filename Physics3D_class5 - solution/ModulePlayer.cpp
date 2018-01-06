@@ -138,7 +138,8 @@ bool ModulePlayer::CleanUp()
 
 void ModulePlayer::RestartPlayer() 
 {
-	
+	deadplayer = false;
+
 	vehicle->SetPos(initial_pos.x, initial_pos.y, initial_pos.z);
 	memset(car_transformed_matrix, 0, sizeof(car_transformed_matrix));
 	vehicle->GetTransform(car_transformed_matrix);
@@ -301,9 +302,9 @@ update_status ModulePlayer::Update(float dt)
 
 		}
 
-
-		return UPDATE_CONTINUE;
 	}
+		return UPDATE_CONTINUE;
+	
 }
 
 
