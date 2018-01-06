@@ -9,8 +9,11 @@ ModulePlayer::ModulePlayer(Application* app, bool start_enabled) : Module(app, s
 {
 	turn = acceleration = brake = 0.0f;
 	min = 0;
-	live = 3;
+
+
+	lives = 3;
 	laps = 0;
+
 	winmusic = false;
 	endmusic = false;
 	deadplayer = false;
@@ -141,7 +144,8 @@ void ModulePlayer::RestartPlayer()
 	App->player->vehicle->body->setLinearVelocity(btVector3(0, 0, 0));
 	App->player->vehicle->body->setAngularVelocity(btVector3(0, 0, 0));
 
-	//App->player->live = live - 1;
+	App->player->lives = 3;
+	App->player->timer = 0;
 
 }
 // Update: draw background
@@ -157,14 +161,15 @@ update_status ModulePlayer::Update(float dt)
 
 	turn = acceleration = brake = 0.0f;
 
+	if (App->input->GetKey(SDL_SCANCODE_R) == KEY_DOWN)
+	{
+
+		RestartPlayer();
+	}
+
 	if (!deadplayer || winplayer)//si player muere o gana 
 	{
 
-		if (App->input->GetKey(SDL_SCANCODE_R) == KEY_DOWN) 
-		{
-
-			RestartPlayer();
-		}
 
 		if (App->input->GetKey(SDL_SCANCODE_UP) == KEY_REPEAT)
 		{
@@ -230,6 +235,7 @@ update_status ModulePlayer::Update(float dt)
 
 
 
+
 	if (vehicle->GetKmh() > 0) {
 		vehicle->ApplyEngineForce(-150.0f);
 	}
@@ -244,9 +250,6 @@ update_status ModulePlayer::Update(float dt)
 		}
 	}
 
-	vehicle->ApplyEngineForce(acceleration);
-	vehicle->Turn(turn);
-	vehicle->Brake(brake);
 
 	vehicle->Render();
 
@@ -256,38 +259,60 @@ update_status ModulePlayer::Update(float dt)
 		runtime.Start();
 	}
 
-	if (live == 0)
+	if (lives == 0)
 	{
+		deadplayer = true;
 		EndRun();
 	}
 
-	if (vehicle->GetPos().z >= 20)
-	{
-		App->scene_intro->touched = false;
-	}
-
-	if (laps == 3)
-	{
-		WinRun();
-	}
+	vehicle->ApplyEngineForce(acceleration);
+	vehicle->Turn(turn);
+	vehicle->Brake(brake);
 
 
 	char title[80];
 
+	if (!deadplayer)
+	{
+		velocity = vehicle->GetKmh();
+		sprintf_s(title, "%.1f Km/h      Time: %i : %i       HP: %i  ", vehicle->GetKmh(), min, (int)runtime.ReadSec(), lives);
+		App->window->SetTitle(title);
 
-	sprintf_s(title, "%.1f Km/h      Time: %i : %i       LAPS: %i/3           HP: %i  ", vehicle->GetKmh(), min, (int)runtime.ReadSec(), laps, live);
-	App->window->SetTitle(title);
+		if (vehicle->GetPos().z >= 20)
+		{
+			App->scene_intro->touched = false;
+
+		}
+
+		if (laps == 3)
+		{
+
+			runtime.Stop(); //porque no para?
+			velocity = 0;
+			sprintf_s(title, "%.1f Km/h      Total Time: %i : %i       HP: %i  ", vehicle->GetKmh(), min, total_time, lives);
+			App->window->SetTitle(title);
+
+			WinRun();
+
+		}
 
 
-
-
-
-	return UPDATE_CONTINUE;
+		return UPDATE_CONTINUE;
+	}
 }
 
 
 void ModulePlayer::EndRun()
 {
+
+	char gameover[50];
+	deadplayer = true;
+
+
+	sprintf_s(gameover, "You lost! --------> To play again press R");
+	App->window->SetTitle(gameover);
+
+	
 
 	deadplayer = true;
 	best_time = runtime.Read();
@@ -302,7 +327,7 @@ void ModulePlayer::WinRun()
 
 void ModulePlayer::NewRun()
 {
-	live = 3;
+	lives = 3;
 
 }
 

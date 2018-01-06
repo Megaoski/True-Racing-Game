@@ -16,6 +16,12 @@ struct Turbos
 	PhysBody3D* body;
 };
 
+struct Lap
+{
+	Cube goalZone;
+	PhysBody3D* goalzone_body;
+};
+
 class ModulePlayer : public Module
 {
 public:
@@ -51,6 +57,9 @@ public:
 	Turbos Meta;
 	Turbos DeadFloor;
 
+	p2List<Lap> goals;
+	Lap goal;
+
 	Timer runtime;
 	uint min;
 
@@ -58,7 +67,9 @@ public:
 	uint total_min;*/
 	uint total_time;
 
-	uint live;
+	uint lives;
+	uint timer;
+
 	uint laps;
 
 	bool endmusic;
@@ -67,4 +78,7 @@ public:
 	bool deadplayer;
 	bool winplayer;
 
+private:
+
+	float velocity;
 };

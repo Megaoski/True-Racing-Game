@@ -52,9 +52,10 @@ public:
 	bool turbo_on = false;
 
 
+private:
 
-
-
+	Timer timer;
+	uint getTime;
 
 
 };

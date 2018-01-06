@@ -126,12 +126,12 @@ void ModuleSceneIntro::CreateRoadSensors()
 	turbo2.SetPos(-200, 5, 222.5f);
 	turbo2.color = Green;
 
-
 	App->player->SecondTurbo.cube = turbo2;
 	App->player->SecondTurbo.body = App->physics->AddBody(turbo2, 0, true);
 	App->player->SecondTurbo.body->collision_listeners.add(this);
 	App->player->turbos.add(App->player->SecondTurbo);
 
+	
 	Cube lineaMeta(20, 5, 5);
 	lineaMeta.SetPos(0, 5, 10);
 	lineaMeta.color = Red;
@@ -140,6 +140,9 @@ void ModuleSceneIntro::CreateRoadSensors()
 	App->player->Meta.body = App->physics->AddBody(lineaMeta, 0, true);
 	App->player->Meta.body->collision_listeners.add(this);
 	App->player->turbos.add(App->player->Meta);
+
+	timer.Start();
+	getTime = 0;
 }
 
 Cube ModuleSceneIntro::CreateRoads(vec3 measures, vec3 position, Color color)
@@ -215,9 +218,9 @@ void ModuleSceneIntro::VehicleHasFallen()
 	App->player->vehicle->body->setAngularVelocity(btVector3(0, 0, 0));
 	App->player->brake = BRAKE_POWER;
 
-	App->player->live--;
 
-
+	App->player->lives--;
+	
 }
 
 
