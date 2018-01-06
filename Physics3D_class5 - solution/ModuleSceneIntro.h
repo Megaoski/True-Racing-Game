@@ -30,12 +30,10 @@ public:
 	void VehicleHasFallen();
 	void CreateMap();
 
-	bool turbo_on = false;
-
 public:
-	
 
-	PhysBody3D* pb_chassis;
+
+	PhysBody3D * pb_chassis;
 	Cube p_chassis;
 
 	PhysBody3D* pb_wheel;
@@ -47,15 +45,16 @@ public:
 	PhysMotor3D* left_wheel;
 	PhysMotor3D* right_wheel;
 
-	
+
 	p2List<Cube> parts;
+	bool touched;
 
-	
-	
+	bool turbo_on = false;
 
-	PhysBody3D* sensors[10]; // array para los sensores de las rampas
 
-	
-	
+
+
+
+
 
 };

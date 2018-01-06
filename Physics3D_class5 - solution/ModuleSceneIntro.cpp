@@ -14,6 +14,7 @@
 
 ModuleSceneIntro::ModuleSceneIntro(Application* app, bool start_enabled) : Module(app, start_enabled)
 {
+	touched = false;
 }
 
 ModuleSceneIntro::~ModuleSceneIntro()
@@ -24,22 +25,22 @@ bool ModuleSceneIntro::Start()
 {
 	LOG("Loading Intro assets");
 	bool ret = true;
-	
+
 	CreateMap();
-	
+
 	for (p2List_item<Cube>* item = parts.getFirst(); item; item = item->next)
 	{
 		App->physics->AddBody(item->data, 0.0f, false);
 	}
 
-	
+
 	if (App->player->endmusic == false || App->player->winmusic == false)
 	{
 		App->audio->PlayMusic("music/freestyla.ogg");
 	}
 	else
 		App->audio->PlayMusic("music/freestyla.ogg", 0.0f);//play fx and stop actual audio
-	
+
 	return ret;
 }
 
@@ -60,8 +61,9 @@ update_status ModuleSceneIntro::Update(float dt)
 		item->data.Render();
 		/*LOG("PINTA LAS ROADS");*/
 	}
-		
-		
+
+
+
 	return UPDATE_CONTINUE;
 }
 
@@ -78,27 +80,33 @@ void ModuleSceneIntro::OnCollision(PhysBody3D* body1, PhysBody3D* body2)
 		Turbo(2);
 	}
 
+	if (body1 == App->player->Meta.body)
+	{
+		Turbo(3);
+	}
+
 	if (body1 == App->player->DeadFloor.body)
 	{
 		VehicleHasFallen();
 	}
-	
+
+
 }
 
 
 Cube ModuleSceneIntro::CreateRamps(vec3 measures, vec3 position, float angle, const vec3 &u, Color color)
-{	
+{
 	Cube example(measures.x, measures.y, measures.z);
 	example.SetPos(position.x, position.y, position.z);
 	example.SetRotation(angle, u);
 	example.color = color;
 	parts.add(example);
 	/*LOG("CREA LA RAMPA");*/
-	
+
 
 	return example;
-	
-	
+
+
 }
 
 
@@ -107,7 +115,7 @@ void ModuleSceneIntro::CreateRoadSensors()
 	Cube turbo1(40, 5, 20);
 	turbo1.SetPos(-110, 5, 165);
 	turbo1.color = Green;
-	
+
 
 	App->player->FirstTurbo.cube = turbo1;
 	App->player->FirstTurbo.body = App->physics->AddBody(turbo1, 0, true);
@@ -124,13 +132,20 @@ void ModuleSceneIntro::CreateRoadSensors()
 	App->player->SecondTurbo.body->collision_listeners.add(this);
 	App->player->turbos.add(App->player->SecondTurbo);
 
-	
+	Cube lineaMeta(20, 5, 5);
+	lineaMeta.SetPos(0, 5, 10);
+	lineaMeta.color = Red;
+
+	App->player->Meta.cube = lineaMeta;
+	App->player->Meta.body = App->physics->AddBody(lineaMeta, 0, true);
+	App->player->Meta.body->collision_listeners.add(this);
+	App->player->turbos.add(App->player->Meta);
 }
 
 Cube ModuleSceneIntro::CreateRoads(vec3 measures, vec3 position, Color color)
 {
 	Cube example(measures.x, measures.y, measures.z);
-	example.SetPos(position.x, position.y,position.z);
+	example.SetPos(position.x, position.y, position.z);
 	example.color = color;
 	parts.add(example);
 
@@ -150,7 +165,7 @@ Cube ModuleSceneIntro::CreateExternalSensors(vec3 measures, vec3 position, Color
 	App->player->DeadFloor.body->collision_listeners.add(this);
 	App->player->turbos.add(App->player->DeadFloor);
 
-	
+
 
 	return example;
 }
@@ -167,49 +182,74 @@ void ModuleSceneIntro::Turbo(int num)
 		App->player->vehicle->body->setLinearVelocity(btVector3(0, 15, -50));
 		App->player->vehicle->body->setAngularVelocity(btVector3(0, 0, 0));
 	}
+
+	else if (num == 3)
+	{
+		App->player->vehicle->body->setLinearVelocity(btVector3(0, 2, 20));
+		App->player->vehicle->body->setAngularVelocity(btVector3(0, 0, 0));
+
+		if (!touched)
+		{
+			App->player->laps++;
+			touched = true;
+		}
+	}
 }
 
 
 void ModuleSceneIntro::VehicleHasFallen()
 {
-	App->player->vehicle->SetTransform(IdentityMatrix.M);
-	App->player->vehicle->SetPos(App->player->initial_pos.x, App->player->initial_pos.y, App->player->initial_pos.z);
-	
-	App->player->vehicle->body->setLinearVelocity(btVector3(0,0,0));
+	if (App->player->laps > 0)
+	{
+		App->player->vehicle->SetTransform(IdentityMatrix.M);
+		App->player->vehicle->SetPos(App->player->initial_pos.x, App->player->initial_pos.y, App->player->initial_pos.z + 20);
+	}
+	else
+	{
+		App->player->vehicle->SetTransform(IdentityMatrix.M);
+		App->player->vehicle->SetPos(App->player->initial_pos.x, App->player->initial_pos.y, App->player->initial_pos.z);
+	}
+
+
+	App->player->vehicle->body->setLinearVelocity(btVector3(0, 0, 0));
 	App->player->vehicle->body->setAngularVelocity(btVector3(0, 0, 0));
 	App->player->brake = BRAKE_POWER;
 
 	App->player->live--;
-	
-	
+
+
 }
 
 
 
 void ModuleSceneIntro::CreateMap()
 {
-	
+
+
 	Cube bigsensor = CreateExternalSensors({ 2000, 1, 1600 }, { 22, 0, 60 }, Red);// Use NoColor in case we want to hide it
 	CreateRoadSensors();
-	
 
-	
+
+
 
 	Cube ramp1 = CreateRamps({ 20, 3, 20 }, { 20, 10, 20 }, -12, { 1, 0, 0 }, Blue);//just in case we need ramps
-	
 
-	
-	
-	Cube road1 = CreateRoads({ 20, 5, 270 }, { 0, 5, 20 }, Grey);
-	Cube road2 = CreateRoads({ 100, 5, 20 }, { -40, 5, 165 }, Grey);
-	Cube road3 = CreateRoads({ 160, 5, 20 }, { -230, 5, 165 }, Grey);
-	Cube road4 = CreateRoads({ 20, 5, 120 }, { -320, 5, 115 }, Grey);
-	Cube road5 = CreateRoads({ 160, 5, 20 }, { -410, 5, 65 }, Grey);
-	Cube road6 = CreateRoads({ 20, 5, 300 }, { -500, 5, 205 }, Grey);
-	Cube road7 = CreateRoads({ 300, 5, 20 }, { -360, 5, 365 }, Grey);
-	Cube road8 = CreateRoads({ 20, 5, 135 }, { -200, 5, 310}, Grey);
 
-	Cube road9 = CreateRoads({ 20, 5, 250 }, { -200, 5, -10 }, Grey);
-	Cube road10 = CreateRoads({ 230, 5, 20 }, { -105, 5, -125 }, Grey);
+
+
+	Cube road1 = CreateRoads({ 20, 5, 142.5f }, { 0, 5, 83.75f }, Grey);
+	/*Cube road1 = CreateRoads({ 20, 5, 270 }, { 0, 5, 20 }, Grey);*/
+	Cube road2 = CreateRoads({ 20, 5, 122.5f }, { 0, 5, -53.75f }, Grey);//road detras del player al principio de la partida
+
+	Cube road3 = CreateRoads({ 100, 5, 20 }, { -40, 5, 165 }, Grey);
+	Cube road4 = CreateRoads({ 160, 5, 20 }, { -230, 5, 165 }, Grey);
+	Cube road5 = CreateRoads({ 20, 5, 120 }, { -320, 5, 115 }, Grey);
+	Cube road6 = CreateRoads({ 160, 5, 20 }, { -410, 5, 65 }, Grey);
+	Cube road7 = CreateRoads({ 20, 5, 300 }, { -500, 5, 205 }, Grey);
+	Cube road8 = CreateRoads({ 300, 5, 20 }, { -360, 5, 365 }, Grey);
+	Cube road9 = CreateRoads({ 20, 5, 135 }, { -200, 5, 310 }, Grey);
+
+	Cube road10 = CreateRoads({ 20, 5, 250 }, { -200, 5, -10 }, Grey);
+	Cube road11 = CreateRoads({ 200, 5, 20 }, { -90, 5, -125 }, Grey);
 
 }
