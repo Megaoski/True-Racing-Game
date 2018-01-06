@@ -138,7 +138,12 @@ bool ModulePlayer::CleanUp()
 
 void ModulePlayer::RestartPlayer() 
 {
+	
 	vehicle->SetPos(initial_pos.x, initial_pos.y, initial_pos.z);
+	memset(car_transformed_matrix, 0, sizeof(car_transformed_matrix));
+	vehicle->GetTransform(car_transformed_matrix);
+	vehicle->collision_listeners.add(this);
+	runtime.Start();
 
 	vehicle->SetTransform(car_transformed_matrix);
 	App->player->vehicle->body->setLinearVelocity(btVector3(0, 0, 0));
@@ -309,7 +314,7 @@ void ModulePlayer::EndRun()
 	deadplayer = true;
 
 
-	sprintf_s(gameover, "You lost! --------> To play again press R");
+	sprintf_s(gameover, "You lost!");
 	App->window->SetTitle(gameover);
 
 	
