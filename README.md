@@ -18,3 +18,10 @@ RIGHT - TURN RIGHT
 R - RESTART FROM THE BEGINNING
 
 Enjoy!
+
+
+PS:
+
+We had to create another github repository cause on the first one we had
+some trouble on doing a commit and we could not even discard changes or anything else.
+link of the first repository: https://github.com/Megaoski/Racing-Game
