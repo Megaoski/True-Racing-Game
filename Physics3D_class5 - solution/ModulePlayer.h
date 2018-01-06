@@ -25,6 +25,8 @@ public:
 	bool Start();
 	update_status Update(float dt);
 	bool CleanUp();
+
+	void RestartPlayer();
 	
 	void EndRun();
 	void NewRun();
@@ -38,6 +40,8 @@ public:
 	float brake;
 	int cameracounter = 0;
 	
+	float car_transformed_matrix[16];
+	uint best_time;
 
 	p2List<Turbos> turbos; //for render
 

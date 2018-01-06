@@ -28,11 +28,18 @@ bool ModulePlayer::Start()
 	VehicleInfo car;
 
 	// Car properties ----------------------------------------
-	car.chassis_size.Set(2, 2, 4);
-	car.chassis_offset.Set(0, 1.5, 0);
-	car.mass = 500.0f;
-	car.front_size.Set(2, 1, 2);
-	car.front_offset.Set(0, 1, 2.75);
+	car.chassis_size.Set(2, 2, 5);
+	car.chassis_offset.Set(0, 1, 0);
+	car.front_size.Set(1.6f, 1.6f, 1.2f);
+	car.front_offset.Set(0, 1, 4);
+	car.back_size.Set(2, 1, 2.2f);
+	car.back_offset.Set(0, 1, -2);
+	car.left_backlight_size.Set(0.5f, 0.4f, 0.4f);
+	car.left_backlight_offset.Set(0.75f, 0.8f, -3);
+	car.right_backlight_size.Set(0.5f, 0.4f, 0.4f);
+	car.right_backlight_offset.Set(-0.75f, 0.8f, -3);
+
+	car.mass = 300.0f;
 	car.suspensionStiffness = 15.88f;
 	car.suspensionCompression = 0.83f;
 	car.suspensionDamping = 0.88f;
@@ -42,8 +49,8 @@ bool ModulePlayer::Start()
 
 	// Wheel properties ---------------------------------------
 	float connection_height = 1.2f;
-	float wheel_radius = 0.6f;
-	float wheel_width = 0.5f;
+	float wheel_radius = 0.7f;
+	float wheel_width = 1.1f;
 	float suspensionRestLength = 1.2f;
 
 	// Don't change anything below this line ------------------
@@ -107,7 +114,11 @@ bool ModulePlayer::Start()
 	
 	vehicle = App->physics->AddVehicle(car);
 	vehicle->SetPos(initial_pos.x,initial_pos.y, initial_pos.z);
+	memset(car_transformed_matrix, 0, sizeof(car_transformed_matrix));
+	vehicle->GetTransform(car_transformed_matrix);
 	vehicle->collision_listeners.add(this);
+
+	best_time = 0;
 	
 	return true;
 }
@@ -120,6 +131,10 @@ bool ModulePlayer::CleanUp()
 	return true;
 }
 
+void ModulePlayer::RestartPlayer() {
+
+	
+}
 // Update: draw background
 update_status ModulePlayer::Update(float dt)
 {
@@ -137,7 +152,15 @@ update_status ModulePlayer::Update(float dt)
 	{
 		if (App->input->GetKey(SDL_SCANCODE_UP) == KEY_REPEAT)
 		{
-			acceleration = MAX_ACCELERATION;
+			if (vehicle->GetKmh() < 50.0f) {
+				acceleration = MAX_ACCELERATION * 2;
+			}
+			else if (vehicle->GetKmh() > 50.0f) {
+				acceleration = MAX_ACCELERATION;
+			}
+			if (vehicle->GetKmh() < 0) {
+				brake = BRAKE_POWER / 4;
+			}
 		}
 
 		if (App->input->GetKey(SDL_SCANCODE_LEFT) == KEY_REPEAT)
@@ -154,7 +177,16 @@ update_status ModulePlayer::Update(float dt)
 
 		if (App->input->GetKey(SDL_SCANCODE_DOWN) == KEY_REPEAT)
 		{
-			brake = BRAKE_POWER;
+			if (vehicle->GetKmh() > -30.0f) {
+				acceleration = -MAX_ACCELERATION;
+				if (vehicle->lights_on == false) vehicle->lights_on = true;
+				else if (vehicle->lights_on == true) vehicle->lights_on = false;
+			}
+			else if (vehicle->GetKmh() > 0) {
+				brake = BRAKE_POWER / 4;
+			}
+
+			
 		}
 
 
@@ -175,6 +207,20 @@ update_status ModulePlayer::Update(float dt)
 	
 	
 
+	if (vehicle->GetKmh() > 0) {
+		vehicle->ApplyEngineForce(-150.0f);
+	}
+	else if (vehicle->GetKmh() < 0) {
+		vehicle->ApplyEngineForce(150.0f);
+
+		if (vehicle->GetKmh() > 0 && App->input->GetKey(SDL_SCANCODE_UP) != KEY_REPEAT) {
+			acceleration = -200.0f;
+		}
+		if (vehicle->GetKmh() < 0 && App->input->GetKey(SDL_SCANCODE_DOWN) != KEY_REPEAT) {
+			acceleration = 200.0f;
+		}
+	}
+	
 	vehicle->ApplyEngineForce(acceleration);
 	vehicle->Turn(turn);
 	vehicle->Brake(brake);
