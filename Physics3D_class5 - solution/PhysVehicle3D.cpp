@@ -94,11 +94,21 @@ void PhysVehicle3D::Render()
 	back2.transform.M[13] += offset_b2.getY();
 	back2.transform.M[14] += offset_b2.getZ();
 
-	if (lights_on) {
+	if (lights_on == true) {
 		
 		back1.color = Yellow;
 		back2.color = Yellow;
 	}
+	if (left_light == true) {
+
+		back1.color = Yellow;
+	}
+
+	if (right_light == true) {
+
+		back2.color = Yellow;
+	}
+
 
 	//Back chassis
 

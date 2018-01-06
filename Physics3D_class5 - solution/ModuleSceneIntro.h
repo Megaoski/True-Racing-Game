@@ -30,6 +30,8 @@ public:
 	void VehicleHasFallen();
 	void CreateMap();
 
+	bool turbo_on = false;
+
 public:
 	
 

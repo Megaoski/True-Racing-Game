@@ -64,5 +64,7 @@ public:
 
 	VehicleInfo info;
 	btRaycastVehicle* vehicle;
-	bool lights_on=false;
+	bool lights_on = false;
+	bool left_light = false;
+	bool right_light = false;
 };

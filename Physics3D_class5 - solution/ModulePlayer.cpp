@@ -39,12 +39,12 @@ bool ModulePlayer::Start()
 	car.right_backlight_size.Set(0.5f, 0.4f, 0.4f);
 	car.right_backlight_offset.Set(-0.75f, 0.8f, -3);
 
-	car.mass = 300.0f;
+	car.mass = 700.0f;
 	car.suspensionStiffness = 15.88f;
 	car.suspensionCompression = 0.83f;
 	car.suspensionDamping = 0.88f;
-	car.maxSuspensionTravelCm = 1000.0f;
-	car.frictionSlip = 50.5;
+	car.maxSuspensionTravelCm = 500.0f;
+	car.frictionSlip = 50.0f;
 	car.maxSuspensionForce = 6000.0f;
 
 	// Wheel properties ---------------------------------------
@@ -133,7 +133,14 @@ bool ModulePlayer::CleanUp()
 
 void ModulePlayer::RestartPlayer() {
 
-	
+	vehicle->SetPos(initial_pos.x, initial_pos.y, initial_pos.z);
+
+	vehicle->SetTransform(car_transformed_matrix);
+	App->player->vehicle->body->setLinearVelocity(btVector3(0, 0, 0));
+	App->player->vehicle->body->setAngularVelocity(btVector3(0, 0, 0));
+
+	//App->player->live = live - 1;
+
 }
 // Update: draw background
 update_status ModulePlayer::Update(float dt)
@@ -149,6 +156,11 @@ update_status ModulePlayer::Update(float dt)
 	turn = acceleration = brake = 0.0f;
 
 	if(!deadplayer)
+
+		if (App->input->GetKey(SDL_SCANCODE_R) == KEY_REPEAT) {
+
+			RestartPlayer();
+		}
 	{
 		if (App->input->GetKey(SDL_SCANCODE_UP) == KEY_REPEAT)
 		{
@@ -167,12 +179,19 @@ update_status ModulePlayer::Update(float dt)
 		{
 			if (turn < TURN_DEGREES)
 				turn += TURN_DEGREES;
+
+			if (vehicle->left_light == false) vehicle->left_light = true;
+			else if (vehicle->left_light == true) vehicle->left_light = false;
 		}
 
 		if (App->input->GetKey(SDL_SCANCODE_RIGHT) == KEY_REPEAT)
 		{
 			if (turn > -TURN_DEGREES)
 				turn -= TURN_DEGREES;
+
+			if (vehicle->right_light == false) vehicle->right_light = true;
+			else if (vehicle->right_light == true) vehicle->right_light = false;
+			
 		}
 
 		if (App->input->GetKey(SDL_SCANCODE_DOWN) == KEY_REPEAT)
@@ -265,6 +284,8 @@ void ModulePlayer::EndRun()
 {
 	
 	deadplayer = true;
+
+	best_time = runtime.Read();
 	
 	/*endmusic = true;*/
 	
