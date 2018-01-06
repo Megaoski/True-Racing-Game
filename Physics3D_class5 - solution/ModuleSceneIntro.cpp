@@ -33,6 +33,7 @@ bool ModuleSceneIntro::Start()
 	}
 
 	
+	
 	if (App->player->endmusic == false || App->player->winmusic == false)
 	{
 		App->audio->PlayMusic("music/freestyla.ogg");
@@ -118,12 +119,21 @@ void ModuleSceneIntro::CreateRoadSensors()
 	turbo2.SetPos(-200, 5, 222.5f);
 	turbo2.color = Green;
 
-
 	App->player->SecondTurbo.cube = turbo2;
 	App->player->SecondTurbo.body = App->physics->AddBody(turbo2, 0, true);
 	App->player->SecondTurbo.body->collision_listeners.add(this);
 	App->player->turbos.add(App->player->SecondTurbo);
 
+	Cube goalzone(20, 5, 40);
+	goalzone.SetPos(0, 0, 0);
+	goalzone.color = Black;
+
+	App->player->goal.goalZone = goalzone;
+	App->player->goal.goalzone_body = App->physics->AddBody(turbo2, 0, true);
+	App->player->goal.goalzone_body->collision_listeners.add(this);
+	App->player->goals.add(App->player->goal);
+	timer.Start();
+	getTime = 0;
 	
 }
 
@@ -179,7 +189,7 @@ void ModuleSceneIntro::VehicleHasFallen()
 	App->player->vehicle->body->setAngularVelocity(btVector3(0, 0, 0));
 	App->player->brake = BRAKE_POWER;
 
-	App->player->live--;
+	App->player->lives--;
 	
 	
 }

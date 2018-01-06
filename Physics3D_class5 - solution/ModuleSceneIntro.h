@@ -55,7 +55,10 @@ public:
 
 	PhysBody3D* sensors[10]; // array para los sensores de las rampas
 
-	
+private:
+
+	Timer timer;
+	uint getTime;
 	
 
 };

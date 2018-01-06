@@ -17,6 +17,15 @@ PrimitiveTypes Primitive::GetType() const
 	return type;
 }
 
+
+vec3 Primitive::GetPosition() const
+{
+	vec3 pos;
+	pos.x = transform.M[12];
+	pos.y = transform.M[13];
+	pos.z = transform.M[14];
+	return pos;
+}
 // ------------------------------------------------------------
 void Primitive::Render() const
 {
