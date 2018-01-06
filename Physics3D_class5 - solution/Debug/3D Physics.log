@@ -1,2 +1,32 @@
-﻿  ModuleSceneIntro.cpp
-  3D Physics.vcxproj -> C:\Users\Usuario\Documents\GitHub\Racing-Game\Physics3D_class5 - solution\Debug\3D Physics - class5.exe
+﻿  Timer.cpp
+  Primitive.cpp
+  PhysVehicle3D.cpp
+  PhysBody3D.cpp
+  ModuleWindow.cpp
+  ModuleSceneIntro.cpp
+  ModuleRenderer3D.cpp
+  ModulePlayer.cpp
+  ModulePhysics3D.cpp
+  ModuleInput.cpp
+  ModuleCamera3D.cpp
+  ModuleAudio.cpp
+  Main.cpp
+  log.cpp
+  Light.cpp
+  glmath.cpp
+c:\users\vlad\documents\github\true-racing-game\physics3d_class5 - solution\glmath.cpp(12): warning C4244: 'return': conversion from 'double' to 'float', possible loss of data
+c:\users\vlad\documents\github\true-racing-game\physics3d_class5 - solution\glmath.cpp(27): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
+c:\users\vlad\documents\github\true-racing-game\physics3d_class5 - solution\glmath.cpp(43): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
+c:\users\vlad\documents\github\true-racing-game\physics3d_class5 - solution\glmath.cpp(53): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
+c:\users\vlad\documents\github\true-racing-game\physics3d_class5 - solution\glmath.cpp(72): warning C4244: 'return': conversion from 'double' to 'float', possible loss of data
+c:\users\vlad\documents\github\true-racing-game\physics3d_class5 - solution\glmath.cpp(87): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
+c:\users\vlad\documents\github\true-racing-game\physics3d_class5 - solution\glmath.cpp(103): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
+c:\users\vlad\documents\github\true-racing-game\physics3d_class5 - solution\glmath.cpp(600): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
+c:\users\vlad\documents\github\true-racing-game\physics3d_class5 - solution\glmath.cpp(618): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
+c:\users\vlad\documents\github\true-racing-game\physics3d_class5 - solution\glmath.cpp(758): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
+c:\users\vlad\documents\github\true-racing-game\physics3d_class5 - solution\glmath.cpp(778): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
+  Color.cpp
+  Application.cpp
+  Generating Code...
+  LINK : C:\Users\Vlad\Documents\GitHub\True-Racing-Game\Physics3D_class5 - solution\Debug\3D Physics - class5.exe not found or not built by the last incremental link; performing full link
+LINK : fatal error LNK1104: cannot open file 'SDL/libx86/SDL2.lib'
