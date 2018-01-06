@@ -15,11 +15,12 @@ UP - ACCELERATE
 DOWN - BREAK/REVERSE
 LEFT - TURN LEFT
 RIGHT - TURN RIGHT
-R - RESTART FROM THE BEGINNING
+R - RESTART FROM THE BEGINNING (Only if you have at least 1 life)
 Y- CHANGE CAMERA VIEW
 
 Enjoy!
 
+If your lives get to 0, you have to close the game and start again.
 
 PS:
 
