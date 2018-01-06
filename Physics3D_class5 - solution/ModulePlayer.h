@@ -33,8 +33,9 @@ public:
 	bool CleanUp();
 
 	void RestartPlayer();
-	
+
 	void EndRun();
+	void WinRun();
 	void NewRun();
 
 public:
@@ -45,7 +46,7 @@ public:
 	float acceleration;
 	float brake;
 	int cameracounter = 0;
-	
+
 	float car_transformed_matrix[16];
 	uint best_time;
 
@@ -53,6 +54,7 @@ public:
 
 	Turbos FirstTurbo;
 	Turbos SecondTurbo;
+	Turbos Meta;
 	Turbos DeadFloor;
 
 	p2List<Lap> goals;
@@ -68,10 +70,13 @@ public:
 	uint lives;
 	uint timer;
 
+	uint laps;
+
 	bool endmusic;
 	bool winmusic;
-	
+
 	bool deadplayer;
+	bool winplayer;
 
 private:
 

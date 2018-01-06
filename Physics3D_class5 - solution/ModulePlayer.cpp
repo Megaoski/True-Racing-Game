@@ -9,10 +9,15 @@ ModulePlayer::ModulePlayer(Application* app, bool start_enabled) : Module(app, s
 {
 	turn = acceleration = brake = 0.0f;
 	min = 0;
+
+
 	lives = 3;
+	laps = 0;
+
 	winmusic = false;
 	endmusic = false;
 	deadplayer = false;
+	winplayer = false;
 }
 
 ModulePlayer::~ModulePlayer()
@@ -23,7 +28,7 @@ bool ModulePlayer::Start()
 {
 	LOG("Loading player");
 
-	initial_pos = { 0, 17, 0};
+	initial_pos = { 0, 17, 0 };
 	runtime.Start();
 	VehicleInfo car;
 
@@ -57,10 +62,10 @@ bool ModulePlayer::Start()
 
 	float half_width = car.chassis_size.x*0.5f;
 	float half_length = car.chassis_size.z*0.5f;
-	
-	vec3 direction(0,-1,0);
-	vec3 axis(-1,0,0);
-	
+
+	vec3 direction(0, -1, 0);
+	vec3 axis(-1, 0, 0);
+
 	car.num_wheels = 4;
 	car.wheels = new Wheel[4];
 
@@ -111,15 +116,15 @@ bool ModulePlayer::Start()
 	car.wheels[3].drive = false;
 	car.wheels[3].brake = true;
 	car.wheels[3].steering = false;
-	
+
 	vehicle = App->physics->AddVehicle(car);
-	vehicle->SetPos(initial_pos.x,initial_pos.y, initial_pos.z);
+	vehicle->SetPos(initial_pos.x, initial_pos.y, initial_pos.z);
 	memset(car_transformed_matrix, 0, sizeof(car_transformed_matrix));
 	vehicle->GetTransform(car_transformed_matrix);
 	vehicle->collision_listeners.add(this);
 
 	best_time = 0;
-	
+
 	return true;
 }
 
@@ -131,8 +136,8 @@ bool ModulePlayer::CleanUp()
 	return true;
 }
 
-void ModulePlayer::RestartPlayer() {
-
+void ModulePlayer::RestartPlayer() 
+{
 	vehicle->SetPos(initial_pos.x, initial_pos.y, initial_pos.z);
 
 	vehicle->SetTransform(car_transformed_matrix);
@@ -156,13 +161,16 @@ update_status ModulePlayer::Update(float dt)
 
 	turn = acceleration = brake = 0.0f;
 
-	if(!deadplayer)
-
-		if (App->input->GetKey(SDL_SCANCODE_R) == KEY_REPEAT) {
-
-			RestartPlayer();
-		}
+	if (App->input->GetKey(SDL_SCANCODE_R) == KEY_DOWN)
 	{
+
+		RestartPlayer();
+	}
+
+	if (!deadplayer || winplayer)//si player muere o gana 
+	{
+
+
 		if (App->input->GetKey(SDL_SCANCODE_UP) == KEY_REPEAT)
 		{
 			if (vehicle->GetKmh() < 50.0f) {
@@ -192,7 +200,6 @@ update_status ModulePlayer::Update(float dt)
 
 			if (vehicle->right_light == false) vehicle->right_light = true;
 			else if (vehicle->right_light == true) vehicle->right_light = false;
-			
 		}
 
 		if (App->input->GetKey(SDL_SCANCODE_DOWN) == KEY_REPEAT)
@@ -206,7 +213,7 @@ update_status ModulePlayer::Update(float dt)
 				brake = BRAKE_POWER / 4;
 			}
 
-			
+
 		}
 
 
@@ -223,9 +230,11 @@ update_status ModulePlayer::Update(float dt)
 			}
 		}
 
+
 	}
-	
-	
+
+
+
 
 	if (vehicle->GetKmh() > 0) {
 		vehicle->ApplyEngineForce(-150.0f);
@@ -240,7 +249,9 @@ update_status ModulePlayer::Update(float dt)
 			acceleration = 200.0f;
 		}
 	}
-	
+
+
+	vehicle->Render();
 
 	if ((int)runtime.ReadSec() == 60)
 	{
@@ -258,7 +269,6 @@ update_status ModulePlayer::Update(float dt)
 	vehicle->Turn(turn);
 	vehicle->Brake(brake);
 
-	vehicle->Render();
 
 	char title[80];
 
@@ -267,23 +277,34 @@ update_status ModulePlayer::Update(float dt)
 		velocity = vehicle->GetKmh();
 		sprintf_s(title, "%.1f Km/h      Time: %i : %i       HP: %i  ", vehicle->GetKmh(), min, (int)runtime.ReadSec(), lives);
 		App->window->SetTitle(title);
-	}
-	
-	else
-	{
-		runtime.Stop(); //porque no para?
-		velocity = 0;
-		sprintf_s(title, "%.1f Km/h      Total Time: %i : %i       HP: %i  ", vehicle->GetKmh(), min, total_time, lives);
-		App->window->SetTitle(title);
-	}
-	
 
-	return UPDATE_CONTINUE;
+		if (vehicle->GetPos().z >= 20)
+		{
+			App->scene_intro->touched = false;
+
+		}
+
+		if (laps == 3)
+		{
+
+			runtime.Stop(); //porque no para?
+			velocity = 0;
+			sprintf_s(title, "%.1f Km/h      Total Time: %i : %i       HP: %i  ", vehicle->GetKmh(), min, total_time, lives);
+			App->window->SetTitle(title);
+
+			WinRun();
+
+		}
+
+
+		return UPDATE_CONTINUE;
+	}
 }
 
 
 void ModulePlayer::EndRun()
 {
+
 	char gameover[50];
 	deadplayer = true;
 
@@ -292,8 +313,16 @@ void ModulePlayer::EndRun()
 	App->window->SetTitle(gameover);
 
 	
+
+	deadplayer = true;
+	best_time = runtime.Read();
 	/*endmusic = true;*/
-	
+
+}
+
+void ModulePlayer::WinRun()
+{
+	winplayer = true;
 }
 
 void ModulePlayer::NewRun()
@@ -301,6 +330,7 @@ void ModulePlayer::NewRun()
 	lives = 3;
 
 }
+
 
 
 
